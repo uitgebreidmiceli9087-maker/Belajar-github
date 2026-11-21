@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Studio — HTML / CSS / JS</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#111a2d;--panel2:#0e1728;--line:#25334b;--text:#e7edf7;--muted:#91a0b8;--green:#67e8a5;--blue:#7dd3fc;--purple:#c4b5fd}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;background:var(--bg);color:var(--text)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:9px;color:var(--text);background:#17243a;padding:9px 12px;transition:transform .15s,border-color .15s,background .15s}
+button:hover{border-color:#64809f;background:#1c2b43}button:active{transform:scale(.97)}button:focus-visible,textarea:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.primary{background:#16794e;border-color:#21a36c;color:#effff6}.primary:hover{background:#19885a}.download{background:#243857}
+.app{min-height:100vh;display:flex;flex-direction:column}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);background:#0e1627;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:36px;height:36px;flex:0 0 36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,#34d399,#38bdf8);color:#061321;font-weight:900;font-size:18px}.brand h1{font-size:15px;margin:0;letter-spacing:.2px}.subtitle{font-size:11px;color:var(--muted);margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end}.actions button{font-size:12px}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:12px;flex:1;min-height:0}
+.pane{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--panel);display:flex;flex-direction:column;min-width:0;min-height:360px}
+.pane-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel2);min-height:47px}
+.pane-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#cbd5e1;font-weight:bold}.status{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:5px;flex-wrap:wrap}.tab{border-radius:7px;padding:7px 10px;font-size:12px;background:transparent}.tab[aria-selected="true"]{background:#253651;border-color:#45617e}.tab[data-lang="html"]{color:var(--green)}.tab[data-lang="css"]{color:var(--blue)}.tab[data-lang="js"]{color:var(--purple)}
+.editor-wrap{position:relative;flex:1;display:flex;min-height:0;background:#0c1423}.line-numbers{flex:0 0 39px;padding:13px 7px;text-align:right;white-space:pre;overflow:hidden;color:#52627a;background:#0b1220;border-right:1px solid #1b2940;font-size:12px;line-height:1.65;user-select:none}
+.editor{display:none;flex:1;min-width:0;min-height:340px;width:100%;resize:none;border:0;outline:0;padding:13px 14px;background:transparent;color:#e2e8f0;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2;white-space:pre;overflow:auto;caret-color:var(--green)}.editor.active{display:block}
+.editor-footer{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;color:var(--muted);font-size:10px;border-top:1px solid var(--line);background:var(--panel2)}
+.preview-wrap{display:flex;flex-direction:column;flex:1;min-height:0}.preview-toolbar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0c1423;border-bottom:1px solid var(--line)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.url{font-size:11px;color:#9caec5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;background:#111c2d;border:1px solid #25334b;border-radius:6px;padding:6px 8px}
+.preview{background:white;border:0;width:100%;height:100%;min-height:300px;flex:1}
+.console{border-top:1px solid var(--line);background:#0b1220;max-height:145px;display:flex;flex-direction:column}.console-head{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;font-size:11px;color:#bdc9da;border-bottom:1px solid #1d2a3d}
+.console-output{padding:7px 10px;overflow:auto;min-height:38px;font-size:11px;line-height:1.5;color:#9fb3cb;white-space:pre-wrap;overflow-wrap:anywhere}.console-output .error{color:#fda4af}.console-output .warn{color:#fde68a}.console-output .good{color:#86efac}
+.bottombar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;border-top:1px solid var(--line);background:#0e1627;color:var(--muted);font-size:10px}
+.kbd{border:1px solid #35445d;padding:2px 5px;border-radius:4px;color:#cbd5e1}.toast{position:fixed;bottom:18px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#183b31;border:1px solid #2d775b;color:#d1fae5;border-radius:10px;padding:10px 14px;font-size:12px;transition:.22s;z-index:10}.toast.show{transform:translate(-50%,0);opacity:1}
+.hint{font-size:11px;color:var(--muted);padding:9px 12px;border-top:1px solid var(--line);background:#101a2b}
+@media(max-width:760px){.topbar{align-items:flex-start;padding:11px;flex-direction:column}.actions{justify-content:flex-start;width:100%}.actions button{flex:1}.workspace{grid-template-columns:1fr;padding:8px;gap:9px}.pane{min-height:380px}.pane.editor-pane{min-height:470px}.pane.preview-pane{min-height:420px}.editor{min-height:395px;font-size:12px}.preview{min-height:310px}.bottombar{align-items:flex-start;flex-direction:column}.subtitle{max-width:70vw}}
+@media(max-width:420px){.actions button{padding:8px 7px;font-size:11px}.pane-head{padding:8px}.tab{padding:7px 8px}.editor{padding:11px 10px;font-size:11px}.line-numbers{flex-basis:31px;padding-right:5px;font-size:11px}.pane-title{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">&lt;/&gt;</div><div><h1>Code Studio</h1><div class="subtitle">HTML · CSS · JavaScript — editor mini berbasis browser</div></div></div>
+    <div class="actions">
+      <button class="primary" id="runBtn" title="Jalankan kode (Ctrl/⌘ + Enter)">▶ Run</button>
+      <button id="formatBtn" title="Rapikan indentasi sederhana">↳ Format</button>
+      <button id="copyBtn">▣ Copy HTML</button>
+      <button class="download" id="downloadBtn">⬇ Download .html</button>
+      <button id="resetBtn">↺ Reset</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <section class="pane editor-pane" aria-label="Editor kode">
+      <div class="pane-head">
+        <div class="tabs" role="tablist" aria-label="Pilih bahasa">
+          <button class="tab" role="tab" aria-selected="true" data-lang="html">HTML</button>
+          <button class="tab" role="tab" aria-selected="false" data-lang="css">CSS</button>
+          <button class="tab" role="tab" aria-selected="false" data-lang="js">JavaScript</button>
+        </div>
+        <span class="status" id="activeFile">index.html</span>
+      </div>
+      <div class="editor-wrap">
+        <div class="line-numbers" id="lineNumbers" aria-hidden="true">1</div>
+        <textarea class="editor active" id="htmlEditor" aria-label="Editor HTML" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+        <textarea class="editor" id="cssEditor" aria-label="Editor CSS" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+        <textarea class="editor" id="jsEditor" aria-label="Editor JavaScript" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+      </div>
+      <div class="editor-footer"><span id="cursorInfo">Baris 1 · Kolom 1</span><span><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> untuk Run</span></div>
+      <div class="hint">Tips: HTML untuk struktur, CSS untuk tampilan, JavaScript untuk interaksi. Tekan Run untuk memperbarui preview.</div>
+    </section>
+    <section class="pane preview-pane" aria-label="Hasil preview">
+      <div class="pane-head"><span class="pane-title">Live Preview</span><span class="status" id="runStatus">Belum dijalankan</span></div>
+      <div class="preview-wrap">
+        <div class="preview-toolbar"><span class="dot" style="background:#fb7185"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#4ade80"></span><div class="url">local-preview://index.html</div><button id="refreshBtn" style="padding:5px 9px;font-size:11px">⟳</button></div>
+        <iframe class="preview" id="preview" title="Preview hasil kode" sandbox="allow-scripts allow-forms allow-modals"></iframe>
+      </div>
+      <div class="console"><div class="console-head"><span>› CONSOLE</span><button id="clearConsoleBtn" style="padding:3px 7px;font-size:10px">Clear</button></div><div class="console-output" id="consoleOutput">Siap. Tulis kode lalu tekan Run.</div></div>
+    </section>
+  </main>
+  <footer class="bottombar"><span>● Offline-ready · Kode tersimpan di browser saat digunakan</span><span>Code Studio <span style="color:#52627a">/</span> single-file edition</span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(()=> {
+'use strict';
+const starter = {
+html:`<main class="card">
+  <div class="badge">✦ HTML + CSS + JS</div>
+  <h1>Halo, dunia! 👋</h1>
+  <p>Ini area preview. Ubah kode di sebelah kiri, lalu tekan <b>Run</b>.</p>
+  <button id="helloBtn">Klik aku</button>
+  <p id="message" aria-live="polite"></p>
+</main>`,
+css:`* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  color: #172033;
+  background: linear-gradient(135deg, #d1fae5, #dbeafe);
+}
+.card {
+  width: min(100%, 440px);
+  padding: 30px;
+  border: 1px solid #ffffffb0;
+  border-radius: 22px;
+  background: #ffffffdc;
+  box-shadow: 0 18px 55px #33415522;
+}
+.badge { color: #047857; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+h1 { margin: 14px 0 8px; font-size: clamp(28px, 7vw, 42px); }
+p { line-height: 1.65; color: #536176; }
+button {
+  border: 0; border-radius: 11px; padding: 12px 18px;
+  color: white; background: #059669; font-weight: 700; cursor: pointer;
+}
+button:hover { background: #047857; }
+#message { color: #047857; font-weight: 700; }`,
+js:`const button = document.querySelector('#helloBtn');
+const message = document.querySelector('#message');
+
+button.addEventListener('click', () => {
+  message.textContent = 'Berhasil! JavaScript berjalan 🎉';
+  console.log('Tombol diklik!');
+});
+console.log('Code Studio siap digunakan.');`
+};
+const fields = {
+ html: document.querySelector('#htmlEditor'),
+ css: document.querySelector('#cssEditor'),
+ js: document.querySelector('#jsEditor')
+};
+const tabs = [...document.querySelectorAll('.tab')];
+const lineNumbers = document.querySelector('#lineNumbers');
+const activeFile = document.querySelector('#activeFile');
+const cursorInfo = document.querySelector('#cursorInfo');
+const preview = document.querySelector('#preview');
+const runStatus = document.querySelector('#runStatus');
+const consoleOutput = document.querySelector('#consoleOutput');
+const toast = document.querySelector('#toast');
+let active = 'html', toastTimer;
+const storageKey = 'code-studio-project-v1';
+
+try {
+ const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+ Object.entries(fields).forEach(([k, el]) => el.value = saved && typeof saved[k] === 'string' ? saved[k] : starter[k]);
+} catch {
+ Object.entries(fields).forEach(([k, el]) => el.value = starter[k]);
+}
+
+function saveDraft() {
+ try { localStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(Object.entries(fields).map(([k, el]) => [k, el.value])))); } catch {}
+}
+function showToast(message) {
+ toast.textContent = message;
+ toast.classList.add('show');
+ clearTimeout(toastTimer);
+ toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+function updateLines() {
+ const el = fields[active];
+ lineNumbers.textContent = Array.from({length: el.value.split('\n').length}, (_, i) => i + 1).join('\n');
+ lineNumbers.scrollTop = el.scrollTop;
+ const before = el.value.slice(0, el.selectionStart).split('\n');
+ cursorInfo.textContent = `Baris ${before.length} · Kolom ${before[before.length - 1].length + 1}`;
+}
+function selectTab(lang) {
+ active = lang;
+ tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.lang === lang)));
+ Object.entries(fields).forEach(([k, el]) => el.classList.toggle('active', k === lang));
+ activeFile.textContent = {html: 'index.html', css: 'style.css', js: 'script.js'}[lang];
+ updateLines();
+ fields[lang].focus();
+}
+tabs.forEach(t => t.addEventListener('click', () => selectTab(t.dataset.lang)));
+Object.values(fields).forEach(el => {
+ el.addEventListener('input', () => { updateLines(); saveDraft(); runStatus.textContent = 'Ada perubahan'; });
+ el.addEventListener('scroll', () => { lineNumbers.scrollTop = el.scrollTop; });
+ el.addEventListener('click', updateLines);
+ el.addEventListener('keyup', updateLines);
+ el.addEventListener('keydown', e => {
+   if (e.key === 'Tab') {
+     e.preventDefault();
+     el.setRangeText('  ', el.selectionStart, el.selectionEnd, 'end');
+     updateLines(); saveDraft();
+   }
+   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+ });
+});
+function buildDocument(withConsoleBridge = false) {
+ const bridge = withConsoleBridge ? `<script>
+ (function(){
+   function send(level,args){
+     try {
+       var text=Array.from(args).map(function(v){try{return typeof v==='string'?v:JSON.stringify(v)}catch(e){return String(v)}}).join(' ');
+       parent.postMessage({__codeStudio:true,level:level,text:text},'*');
+     } catch(e){}
+   }
+   ['log','info','warn','error','debug'].forEach(function(k){
+     var original=console[k].bind(console);
+     console[k]=function(){original.apply(console,arguments);send(k,arguments);};
+   });
+   window.addEventListener('error',function(e){send('error',[e.message+' ('+e.lineno+':'+e.colno+')']);});
+   window.addEventListener('unhandledrejection',function(e){send('error',['Promise error:',e.reason]);});
+ })();
+ <\/script>` : '';
+ return `<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Web Project</title>
+<style>
+${fields.css.value}
+</style>
+</head>
+<body>
+${bridge}
+${fields.html.value}
+<script>
+${fields.js.value}
+<\/script>
+</body>
+</html>`;
+}
+function runCode() {
+ consoleOutput.textContent = 'Menjalankan kode...';
+ preview.srcdoc = buildDocument(true);
+ runStatus.textContent = 'Preview diperbarui';
+ saveDraft();
+}
+window.addEventListener('message', event => {
+ if (event.source !== preview.contentWindow || !event.data || event.data.__codeStudio !== true) return;
+ const level = event.data.level || 'log';
+ const line = document.createElement('div');
+ line.className = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'good';
+ line.textContent = `[${level}] ${event.data.text}`;
+ if (consoleOutput.textContent === 'Menjalankan kode...' || consoleOutput.textContent === 'Siap. Tulis kode lalu tekan Run.') consoleOutput.textContent = '';
+ consoleOutput.appendChild(line);
+ consoleOutput.scrollTop = consoleOutput.scrollHeight;
+});
+document.querySelector('#runBtn').addEventListener('click', runCode);
+document.querySelector('#refreshBtn').addEventListener('click', runCode);
+document.querySelector('#downloadBtn').addEventListener('click', () => {
+ const blob = new Blob([buildDocument(false)], {type: 'text/html;charset=utf-8'});
+ const url = URL.createObjectURL(blob);
+ const a = document.createElement('a');
+ a.href = url; a.download = 'index.html';
+ document.body.appendChild(a); a.click(); a.remove();
+ setTimeout(() => URL.revokeObjectURL(url), 1000);
+ showToast('File index.html diunduh ✓');
+});
+document.querySelector('#copyBtn').addEventListener('click', async () => {
+ try {
+   await navigator.clipboard.writeText(buildDocument(false));
+   showToast('HTML berhasil disalin ✓');
+ } catch {
+   const ta = document.createElement('textarea');
+   ta.value = buildDocument(false); document.body.appendChild(ta); ta.select();
+   const ok = document.execCommand('copy'); ta.remove();
+   showToast(ok ? 'HTML berhasil disalin ✓' : 'Tidak bisa menyalin otomatis');
+ }
+});
+document.querySelector('#resetBtn').addEventListener('click', () => {
+ if (!confirm('Kembalikan semua editor ke kode contoh awal? Perubahan yang belum diunduh akan hilang.')) return;
+ Object.entries(fields).forEach(([k, el]) => el.value = starter[k]);
+ saveDraft(); selectTab('html'); runCode(); showToast('Kode contoh dipulihkan');
+});
+document.querySelector('#clearConsoleBtn').addEventListener('click', () => { consoleOutput.textContent = 'Console dibersihkan.'; });
+document.querySelector('#formatBtn').addEventListener('click', () => {
+ const el = fields[active];
+ let depth = 0;
+ const formatted = el.value.split('\n').map(line => {
+   const s = line.trim();
+   if (!s) return '';
+   if (/^[}\])]/.test(s)) depth = Math.max(0, depth - 1);
+   const out = '  '.repeat(depth) + s;
+   // Indentasi dasar: penghitung kurung sederhana, bukan formatter penuh.
+   const opens = (s.match(/[({\[]/g) || []).length;
+   const closes = (s.match(/[)}\]]/g) || []).length;
+   depth = Math.max(0, depth + opens - closes);
+   return out;
+ }).join('\n');
+ el.value = formatted; updateLines(); saveDraft();
+ runStatus.textContent = 'Format sederhana diterapkan';
+ showToast('Indentasi dirapikan (format sederhana)');
+});
+window.addEventListener('keydown', e => {
+ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+});
+updateLines();
+runCode();
+})();
+</script>
+</body>
+</html>
